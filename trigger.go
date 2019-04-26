@@ -3,6 +3,10 @@ package amqp
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+
+	"crypto/tls"
+	"crypto/x509"
 
 	"github.com/project-flogo/core/data/metadata"
 	"github.com/project-flogo/core/support/log"
@@ -20,16 +24,19 @@ type AMQPTrigger struct {
 	consumer        *Consumer
 	settings        *Settings
 	logger          log.Logger
-	conumserChannel []<-chan amqp.Delivery
+	consumerHandler []ConsumerHandler
 }
 
 type Factory struct {
 }
 
+type ConsumerHandler struct {
+	conumserChannel <-chan amqp.Delivery
+	handler         trigger.Handler
+}
 type Consumer struct {
 	conn    *amqp.Connection
 	channel *amqp.Channel
-	handler trigger.Handler
 	tag     string
 	done    chan error
 }
@@ -52,8 +59,33 @@ func (f *Factory) New(config *trigger.Config) (trigger.Trigger, error) {
 		tag:     s.ConsumerTag,
 		done:    make(chan error),
 	}
+	if s.CertPem == "" || s.KeyPem == "" {
+		c.conn, err = amqp.Dial(s.AmqpURI)
+	} else {
+		cfg := new(tls.Config)
 
-	c.conn, err = amqp.Dial(s.AmqpURI)
+		// see at the top
+		cfg.RootCAs = x509.NewCertPool()
+
+		if ca, err := ioutil.ReadFile(s.CertPem); err == nil {
+			cfg.RootCAs.AppendCertsFromPEM(ca)
+		}
+
+		// Move the client cert and key to a location specific to your application
+		// and load them here.
+
+		if cert, err := tls.LoadX509KeyPair(s.CertPem, s.KeyPem); err == nil {
+			cfg.Certificates = append(cfg.Certificates, cert)
+		}
+
+		// see a note about Common Name (CN) at the top
+		c.conn, err = amqp.DialTLS(s.AmqpURI, cfg)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("Dial: %s", err)
 	}
@@ -121,22 +153,24 @@ func (t *AMQPTrigger) Initialize(ctx trigger.InitContext) error {
 		if err != nil {
 			return fmt.Errorf("Queue Consume: %s", err)
 		}
-		t.conumserChannel = append(t.conumserChannel, deliveries)
+		t.consumerHandler = append(t.consumerHandler, ConsumerHandler{conumserChannel: deliveries, handler: handler})
 	}
 	return nil
 }
 
 func (t *AMQPTrigger) Start() error {
 	var err error
-	for _, cChannel := range t.conumserChannel {
+	for _, cChannel := range t.consumerHandler {
+
 		go func() error {
-			for d := range cChannel {
+			for d := range cChannel.conumserChannel {
 
 				output := &Output{}
 
 				output.Data = d.Body
+				t.logger.Debug("The output of the queue is", output.Data)
 
-				_, err = t.consumer.handler.Handle(context.Background(), output)
+				_, err = cChannel.handler.Handle(context.Background(), output)
 
 				if err != nil {
 					return err
