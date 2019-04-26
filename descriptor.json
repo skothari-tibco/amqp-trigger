@@ -1,0 +1,46 @@
+{
+    "name": "flogo-aqp",
+    "type": "flogo:trigger",
+    "version": "0.0.1",
+    "title": "AMQP Trigger",
+    "description": "AMQP Trigger",
+    "homepage": "https://github.com/project-flogo/aws-contrib/tree/master/trigger/lambda",
+    "handler": {
+      "settings": [
+        {
+          "name": "eventType",
+          "type": "string",
+          "description": "The type of event to handle, (e.g. aws:s3, aws:sns)"
+        }
+      ]
+    },
+    "output": [
+      {
+        "name": "context",
+        "type": "object",
+        "description": "The lambda context information"
+      },
+      {
+        "name": "event",
+        "type": "object",
+        "description": "The event data"
+      },
+      {
+        "name": "eventType",
+        "type": "string",
+        "description": "The event type, (e.g. aws:s3, aws:sns)"
+      }
+    ],
+    "reply": [
+      {
+        "name": "data",
+        "type": "any",
+        "description": "The data to reply with"
+      },
+      {
+        "name": "status",
+        "type": "int",
+        "description": "The status code to reply with"
+      }
+    ]
+  }
