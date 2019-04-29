@@ -4,43 +4,61 @@
     "version": "0.0.1",
     "title": "AMQP Trigger",
     "description": "AMQP Trigger",
-    "homepage": "https://github.com/project-flogo/aws-contrib/tree/master/trigger/lambda",
+    "settings": [
+      {
+        "name": "amqpURI",
+        "type": "string",
+        "description": "The uri to connecct to AMQP-Trigger",
+        "required":"true"
+      },
+      {
+        "name": "consumerTag",
+        "type": "string",
+        "description": "The tag for the consumer",
+        "required":"true"
+      },
+      {
+        "name": "certPem",
+        "type": "string",
+        "description": "The path to certificates"
+      },
+      {
+        "name": "keyPem",
+        "type": "string",
+        "description": "The path to certificates"
+      }  
+    ],
     "handler": {
       "settings": [
         {
-          "name": "eventType",
+          "name": "queue",
           "type": "string",
-          "description": "The type of event to handle, (e.g. aws:s3, aws:sns)"
-        }
+          "description": "The name of the queue",
+          "required":"true"
+        },
+        {
+          "name": "exchange",
+          "type": "string",
+          "description": "The name of the exchange",
+          "required":"true"
+        },
+        {
+          "name": "bindingKey",
+          "type": "string",
+          "description": "The binding key for the exchange"
+        },
+        {
+          "name": "exchangeType",
+          "type": "string",
+          "description": "The exchange type"
+        }  
       ]
     },
     "output": [
       {
-        "name": "context",
-        "type": "object",
-        "description": "The lambda context information"
-      },
-      {
-        "name": "event",
-        "type": "object",
-        "description": "The event data"
-      },
-      {
-        "name": "eventType",
-        "type": "string",
-        "description": "The event type, (e.g. aws:s3, aws:sns)"
-      }
-    ],
-    "reply": [
-      {
         "name": "data",
-        "type": "any",
-        "description": "The data to reply with"
-      },
-      {
-        "name": "status",
-        "type": "int",
-        "description": "The status code to reply with"
+        "type": "object",
+        "description": "The output"
       }
     ]
   }

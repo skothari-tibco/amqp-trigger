@@ -1,7 +1,7 @@
 package amqp
 
 type Settings struct {
-	AmqpURI     string `md:"amqpuri"`
+	AmqpURI     string `md:"amqURI"`
 	ConsumerTag string `md:"consumerTag"`
 
 	CertPem string `md:"certPem"`

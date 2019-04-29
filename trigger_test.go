@@ -13,7 +13,7 @@ import (
 
 const testConfig string = `{
 	"id": "flogo-amqp",
-	"ref": "github.com/skothari-tibco/amqp",
+	"ref": "github.com/skothari-tibco/amqp-trigger",
 	"settings": {
 	  "amqpuri": "amqp://zfdqtzvv:i6bIvbC1m81FRC0AqUZzNHG5EssTvrAL@spider.rmq.cloudamqp.com/zfdqtzvv",
 	  "consumerTag": "client1"
