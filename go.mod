@@ -1,4 +1,4 @@
-module github.com/skothari-tibco/amqp
+module github.com/skothari-tibco/amqp-trigger
 
 require (
 	github.com/project-flogo/core v0.9.0-rc.1
