@@ -15,8 +15,10 @@ const testConfig string = `{
 	"id": "flogo-amqp",
 	"ref": "github.com/skothari-tibco/amqp-trigger",
 	"settings": {
-	  "amqpuri": "amqp://zfdqtzvv:i6bIvbC1m81FRC0AqUZzNHG5EssTvrAL@spider.rmq.cloudamqp.com/zfdqtzvv",
-	  "consumerTag": "client1"
+	  "amqpURI": "amqp://zfdqtzvv:i6bIvbC1m81FRC0AqUZzNHG5EssTvrAL@spider.rmq.cloudamqp.com/zfdqtzvv",
+	  "consumerTag": "client1",
+	  "certPem":"/Users/skothari-tibco/Desktop/cert.pem",
+	  "keyPem":"/Users/skothari-tibco/Desktop/key.pem"
 	},
 	"handlers": [
 	  {
@@ -57,9 +59,6 @@ func TestAMQPTrigger_Initialize(t *testing.T) {
 	assert.NotNil(t, trg)
 
 	err = trg.Start()
-	for {
-
-	}
 	assert.Nil(t, err)
 
 }
