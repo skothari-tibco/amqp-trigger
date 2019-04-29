@@ -1,4 +1,4 @@
-module github.com/project-flogo/amqp
+module github.com/skothari-tibco/amqp
 
 require (
 	github.com/project-flogo/core v0.9.0-rc.1
