@@ -59,33 +59,24 @@ func (f *Factory) New(config *trigger.Config) (trigger.Trigger, error) {
 		tag:     s.ConsumerTag,
 		done:    make(chan error),
 	}
-	if s.CertPem == "" || s.KeyPem == "" {
-		c.conn, err = amqp.Dial(s.AmqpURI)
-	} else {
-		cfg := new(tls.Config)
 
-		// see at the top
-		cfg.RootCAs = x509.NewCertPool()
+	cfg := new(tls.Config)
 
-		if ca, err := ioutil.ReadFile(s.CertPem); err == nil {
-			cfg.RootCAs.AppendCertsFromPEM(ca)
-		}
+	cfg.RootCAs = x509.NewCertPool()
 
-		// Move the client cert and key to a location specific to your application
-		// and load them here.
-
-		if cert, err := tls.LoadX509KeyPair(s.CertPem, s.KeyPem); err == nil {
-			cfg.Certificates = append(cfg.Certificates, cert)
-		}
-
-		// see a note about Common Name (CN) at the top
-		c.conn, err = amqp.DialTLS(s.AmqpURI, cfg)
-		if err != nil {
-			return nil, err
-		}
-
+	if ca, err := ioutil.ReadFile(s.CertPem); err == nil {
+		cfg.RootCAs.AppendCertsFromPEM(ca)
 	}
 
+	// Move the client cert and key to a location specific to your application
+	// and load them here.
+
+	if cert, err := tls.LoadX509KeyPair(s.CertPem, s.KeyPem); err == nil {
+		cfg.Certificates = append(cfg.Certificates, cert)
+	}
+
+	// see a note about Common Name (CN) at the top
+	c.conn, err = amqp.DialTLS(s.AmqpURI, cfg)
 	if err != nil {
 		return nil, fmt.Errorf("Dial: %s", err)
 	}
