@@ -3,7 +3,7 @@
     "type": "flogo:trigger",
     "version": "0.0.1",
     "title": "AMQP Trigger",
-    "description": "AMQP Trigger",
+    "description": "AMQP 1.0 Trigger",
     "settings": [
       {
         "name": "amqpURI",
